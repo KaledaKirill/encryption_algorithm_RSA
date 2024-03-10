@@ -4,7 +4,7 @@
 #define P 7
 #define Q 11
 
-int gcd_extended(int a, int b, int *x, int *y) 
+static int gcd_extended(int a, int b, int *x, int *y) 
 {
     if (a == 0) 
     {
@@ -23,7 +23,7 @@ int gcd_extended(int a, int b, int *x, int *y)
 }
 
 
-int generate_d(int e, int phi) 
+static int generate_d(int e, int phi) 
 {
     int x;
     int y;
