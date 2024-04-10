@@ -3,6 +3,6 @@
 
 char* read_message_from_file(const char* file_path);
 char* read_message_from_stdin();
-void write_message_to_file(const char* file_path, char* message);
+int write_message_to_file(const char* file_path, char* message);
 
 #endif

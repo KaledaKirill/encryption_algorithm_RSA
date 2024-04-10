@@ -6,6 +6,31 @@
 
 //all functions must return NULL if error is happend and print error message 
 
+static char* cut_back_string(char* string, int full_length)
+{
+    char ch;
+    char* temp_ptr;
+
+    while(string[full_length - 1] != '\0')
+    {
+        full_length--;
+    }
+
+    temp_ptr = (char*)realloc(string, full_length * sizeof(char));
+    if(temp_ptr != NULL)
+    {
+        string = temp_ptr;
+    }
+    else 
+    {
+        printf("\nmemory allocation error!\n");
+        free(string);
+        return NULL;
+    }
+
+    return string;
+}
+
 static FILE* open_file(const char* file_path, char* mode)
 {
     FILE* file_ptr = fopen(file_path, mode);
@@ -20,7 +45,7 @@ static FILE* open_file(const char* file_path, char* mode)
 static long get_file_lenth(const char* file_path)
 { 
     FILE* file_ptr = open_file(file_path, "rb");
-    if(file_ptr == NULL) return 0;
+    if(file_ptr == NULL) return -1;
 
     fseek(file_ptr, 0, SEEK_END);
     long file_size = ftell(file_ptr);
@@ -49,23 +74,27 @@ char* read_message_from_file(const char* file_path)
 {
     long file_length;
     char* string;
-    char ch;
 
-    if(is_file_txt(file_path) == 0) 
-        return NULL;
-
-    FILE* file_ptr = open_file(file_path, "r");
-    if(file_ptr == NULL) 
-        return NULL;
-
+    if(is_file_txt(file_path) == 0) return NULL;
     file_length = get_file_lenth(file_path);
+    if(file_length == -1) return NULL;
     if(file_length == 0) 
     {
-        printf("\nFile is empty or doesn't exist\n");
+        printf("\nFile is empty!\n");
         return NULL;
     }
 
+    FILE* file_ptr = open_file(file_path, "r");
+    if(file_ptr == NULL) return NULL;
+
     string = (char*)malloc(file_length + 1);
+    if(string == NULL)
+    {
+        printf("\nMemory allocation error!\n");
+        fclose(file_ptr);
+        return NULL;
+    }
+
     for(int i = 0; i < file_length; i++)
     {
         char ch = getc(file_ptr);
@@ -79,21 +108,55 @@ char* read_message_from_file(const char* file_path)
 }
 
 
-char* read_message_from_stdin()
+char* read_message_from_stdin(void)
 {
+    char ch;
+    int count = 0;
+    int buf_size = 16;
+    int delta = 16;
+    char* string = (char*)malloc(buf_size * sizeof(char));
+    if(string == NULL)
+    {
+        printf("\nMemory allocation error!\n");
+        return NULL;
+    }
+    while((ch = getc(stdin)) != '\n')
+    {
+        string[count] = ch;
+        count++;
+        if(count == buf_size)
+        {
+            buf_size += delta;
+            string = (char*)realloc(string, buf_size * sizeof(char));//TODO: make realloc more safer
+        }
+    }
+    string[count] = '\0';
+    cut_back_string(string, buf_size);
 
+    return string;
 }
 
 
-void write_message_to_file(const char* file_path, char* message)
+int write_message_to_file(const char* file_path, char* message)
 {
+    if(is_file_txt(file_path) == 0) 
+        return -1;
 
+    FILE* file_ptr = open_file(file_path, "wb");
+    if(file_ptr == NULL) return -1;
+    
+    fputs(message, file_ptr);
+    fclose(file_ptr);
+
+    return 0;
 }
 
 int main(void)
 {
-    char* string = read_message_from_file("data.txt");
-    printf("\n%s\n", string);
+    //char* string = read_message_from_file("data.txt");
+    char* string = read_message_from_stdin();
+    // printf("\n%s\n", string);
+    write_message_to_file("res.txt", string);
     free(string);
 
     return 0;
