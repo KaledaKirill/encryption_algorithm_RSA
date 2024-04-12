@@ -4,32 +4,39 @@
 #include <stdlib.h>
 #include <string.h>
 
-//all functions must return NULL if error is happend and print error message 
+//all functions must return NULL if error is happend and print error message, 
+
+static void* my_realloc(void* ptr, int size)
+{
+    void* tmp_ptr;
+
+    tmp_ptr = realloc(ptr, size);
+    if(tmp_ptr != NULL)
+    {
+        return tmp_ptr;
+    }
+    else
+    {
+        free(ptr);
+        printf("\nMemory allocation error!\n");
+        exit(EXIT_FAILURE);
+    }
+}
 
 static char* cut_back_string(char* string, int full_length)
 {
     char ch;
-    char* temp_ptr;
 
     while(string[full_length - 1] != '\0')
     {
         full_length--;
     }
 
-    temp_ptr = (char*)realloc(string, full_length * sizeof(char));
-    if(temp_ptr != NULL)
-    {
-        string = temp_ptr;
-    }
-    else 
-    {
-        printf("\nmemory allocation error!\n");
-        free(string);
-        return NULL;
-    }
+    string = (char*)my_realloc(string, full_length * sizeof(char));
 
     return string;
 }
+
 
 static FILE* open_file(const char* file_path, char* mode)
 {
@@ -41,6 +48,7 @@ static FILE* open_file(const char* file_path, char* mode)
     }
     return file_ptr;
 }
+
 
 static long get_file_lenth(const char* file_path)
 { 
@@ -54,6 +62,7 @@ static long get_file_lenth(const char* file_path)
 
     return file_size;
 }
+
 
 static int is_file_txt(const char *filepath) 
 {
@@ -127,7 +136,7 @@ char* read_message_from_stdin(void)
         if(count == buf_size)
         {
             buf_size += delta;
-            string = (char*)realloc(string, buf_size * sizeof(char));//TODO: make realloc more safer
+            string = (char*)my_realloc(string, buf_size * sizeof(char));
         }
     }
     string[count] = '\0';
@@ -143,20 +152,23 @@ int write_message_to_file(const char* file_path, char* message)
         return -1;
 
     FILE* file_ptr = open_file(file_path, "wb");
-    if(file_ptr == NULL) return -1;
-    
-    fputs(message, file_ptr);
+    if(file_ptr == NULL) 
+        return -1;
+
+    if(fputs(message, file_ptr) == EOF)
+        return -1;
     fclose(file_ptr);
 
     return 0;
 }
 
+
 int main(void)
 {
     //char* string = read_message_from_file("data.txt");
     char* string = read_message_from_stdin();
-    // printf("\n%s\n", string);
-    write_message_to_file("res.txt", string);
+    printf("\n%s\n", string);
+    //write_message_to_file("res.txt", string);
     free(string);
 
     return 0;
