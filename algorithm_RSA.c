@@ -1,4 +1,34 @@
 #include <stdio.h>
+
+
+#include "keys.h"
+
+
+char* decrypt(const private_key private_key)
+{
+    
+}
+
+
+static long long power_mod(long long base, long long exponent, long long mod) {
+    long long result = 1;
+    base %= mod;
+    while (exponent > 0) {
+        if (exponent & 1)
+            result = (result * base) % mod;
+        exponent >>= 1;
+        base = (base * base) % mod;
+    }
+    return result;
+}
+
+char* encrypt(const public_key public_key)
+{
+    
+}
+
+
+#include <stdio.h>
 #include <stdlib.h>
 #include "keys.h"
 #define P 7
