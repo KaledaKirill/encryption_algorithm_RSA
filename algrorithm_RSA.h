@@ -3,9 +3,9 @@
 
 #include "keys.h"
 
-char* decrypt(const private_key private_key);
+char* decrypt(const private_key private_key, int* cipher);
 
-char* encrypt(const public_key public_key);
+int* encrypt(const public_key public_key, char* message);
 
 keys_info generate_keys_info(void);
 

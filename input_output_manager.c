@@ -1,38 +1,21 @@
-#include "input_output_manager.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//all functions must return NULL if error is happend and print error message, 
 
-static void* my_realloc(void* ptr, int size)
-{
-    void* tmp_ptr;
+#include "input_output_manager.h"
+#include "common.h"
 
-    tmp_ptr = realloc(ptr, size);
-    if(tmp_ptr != NULL)
-    {
-        return tmp_ptr;
-    }
-    else
-    {
-        free(ptr);
-        printf("\nMemory allocation error!\n");
-        exit(EXIT_FAILURE);
-    }
-}
+//all functions must return NULL if error is happend and print error message, but if error is rare we have to end programm
 
 static char* cut_back_string(char* string, int full_length)
 {
-    char ch;
-
     while(string[full_length - 1] != '\0')
     {
         full_length--;
     }
 
-    string = (char*)my_realloc(string, full_length * sizeof(char));
+    string = (char*)save_realloc(string, full_length * sizeof(char));
 
     return string;
 }
@@ -50,7 +33,7 @@ static FILE* open_file(const char* file_path, char* mode)
 }
 
 
-static long get_file_lenth(const char* file_path)
+static long get_file_length(const char* file_path)
 { 
     FILE* file_ptr = open_file(file_path, "rb");
     if(file_ptr == NULL) return -1;
@@ -85,7 +68,7 @@ char* read_message_from_file(const char* file_path)
     char* string;
 
     if(is_file_txt(file_path) == 0) return NULL;
-    file_length = get_file_lenth(file_path);
+    file_length = get_file_length(file_path);
     if(file_length == -1) return NULL;
     if(file_length == 0) 
     {
@@ -117,7 +100,7 @@ char* read_message_from_file(const char* file_path)
 }
 
 
-char* read_message_from_stdin(void)
+char* read_line(void)
 {
     char ch;
     int count = 0;
@@ -136,7 +119,7 @@ char* read_message_from_stdin(void)
         if(count == buf_size)
         {
             buf_size += delta;
-            string = (char*)my_realloc(string, buf_size * sizeof(char));
+            string = (char*)save_realloc(string, buf_size * sizeof(char));
         }
     }
     string[count] = '\0';
@@ -146,7 +129,7 @@ char* read_message_from_stdin(void)
 }
 
 
-int write_message_to_file(const char* file_path, char* message)
+int write_decrypted_message_to_file(const char* file_path, char* message)
 {
     if(is_file_txt(file_path) == 0) 
         return -1;
@@ -162,14 +145,18 @@ int write_message_to_file(const char* file_path, char* message)
     return 0;
 }
 
-
-int main(void)
+int write_message_to_file(const char* file_path, char* message)// TODO:
 {
-    //char* string = read_message_from_file("data.txt");
-    char* string = read_message_from_stdin();
-    printf("\n%s\n", string);
-    //write_message_to_file("res.txt", string);
-    free(string);
+    if(is_file_txt(file_path) == 0) 
+        return -1;
+
+    FILE* file_ptr = open_file(file_path, "wb");
+    if(file_ptr == NULL) 
+        return -1;
+
+    if(fputs(message, file_ptr) == EOF)
+        return -1;
+    fclose(file_ptr);
 
     return 0;
 }

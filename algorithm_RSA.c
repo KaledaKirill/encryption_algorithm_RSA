@@ -1,36 +1,12 @@
 #include <stdio.h>
-
-
-#include "keys.h"
-
-
-char* decrypt(const private_key private_key)
-{
-    
-}
-
-
-static long long power_mod(long long base, long long exponent, long long mod) {
-    long long result = 1;
-    base %= mod;
-    while (exponent > 0) {
-        if (exponent & 1)
-            result = (result * base) % mod;
-        exponent >>= 1;
-        base = (base * base) % mod;
-    }
-    return result;
-}
-
-char* encrypt(const public_key public_key)
-{
-    
-}
-
-
-#include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+
+
 #include "keys.h"
+#include "common.h"
+
+
 #define P 7
 #define Q 11
 
@@ -146,4 +122,47 @@ private_key generate_private_key(const keys_info keys_info)
     private_key.n = keys_info.n;
 
     return private_key;
+}
+
+
+static long long power_mod(long long base, long long exponent, long long mod) {
+    long long result = 1;
+    base %= mod;
+    while (exponent > 0) {
+        if (exponent & 1)
+            result = (result * base) % mod;
+        exponent >>= 1;
+        base = (base * base) % mod;
+    }
+    return result;
+}
+
+int* encrypt(const public_key public_key, char* message)
+{
+    int* cipher = NULL;
+    int i;
+
+    for(i = 0; message[i]; i++)
+    {
+        cipher = (int*)save_realloc(cipher, (i + 1) * sizeof(int)); // TODO: what better?
+        cipher[i] = power_mod(message[i], public_key.e, public_key.n);
+    }
+
+    cipher[i + 1] = INT_MAX;
+    return cipher;
+}
+
+char* decrypt(const private_key private_key, int* cipher)
+{
+    char* message = NULL;
+    int i;
+
+    for(i = 0; cipher[i] != INT_MAX; i++)
+    {
+        message = (char*)save_realloc(message, (i + 1) * sizeof(char));
+        message[i] = power_mod(cipher[i], private_key.d, private_key.n);
+    }
+
+    message[i + 1] = '\0';
+    return message;
 }
