@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 
-void* save_realloc(void* ptr, int size)
+void* safe_realloc(void* ptr, int size)
 {
     void* tmp_ptr;
 
