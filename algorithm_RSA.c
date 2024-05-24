@@ -8,8 +8,10 @@
 #define P 101
 #define Q 179
 
-static int gcd_extended(int a, int b, int *x, int *y) {
-    if (a == 0) {
+static int gcd_extended(int a, int b, int *x, int *y) 
+{
+    if (a == 0) 
+    {
         *x = 0;
         *y = 1;
         return b;
@@ -24,56 +26,60 @@ static int gcd_extended(int a, int b, int *x, int *y) {
     return gcd;
 }
 
-static int generate_d(int e, int phi) {
+static int generate_d(int e, int phi) 
+{
     int x;
     int y;
     int gcd;
 
     gcd = gcd_extended(e, phi, &x, &y);
 
-    if (gcd != 1) {
+    if (gcd != 1)
         return -1; // Если НОД(e, phi) не равен 1, то нет мультипликативно обратного элемента
-    } else {
-        // Вычисляем мультипликативно обратный элемент
+    else 
+    {
         int d = (x % phi + phi) % phi;
-        if (d == 1) {
-            // Если d равно 1, ищем другое значение
-            for (int i = 2; i < phi; i++) {
+        if (d == 1) 
+        {
+            for (int i = 2; i < phi; i++) 
+            {
                 d = (i * x % phi + phi) % phi;
-                if (d != 1) {
+                if (d != 1) 
+                {
                     return d;
                 }
             }
-            return -1; // Если не найдено подходящее значение, возвращаем -1
-        } else {
+            return -1; 
+        } 
+        else
             return d;
-        }
     }
 }
 
-static int generate_random_num(int min, int max) {
-    return rand() % (max - min + 1) + min;
-}
-
-static int get_gcd(int num1, int num2) {
+static int get_gcd(int num1, int num2) 
+{
     return num2 ? get_gcd(num2, num1 % num2) : num1;
 }
 
-static int are_coprime(int num1, int num2) {
+static int are_coprime(int num1, int num2) 
+{
     return get_gcd(num1, num2) == 1;
 }
 
-static int generate_e(int phi) {
+static int generate_e(int phi) 
+{
     int e;
 
-    do {
+    do 
+    {
         e = generate_random_num(1, phi - 1);
     } while (!are_coprime(phi, e));
 
     return e;
 }
 
-keys_info generate_keys_info(void) {
+keys_info generate_keys_info(void) 
+{
     keys_info keys_info;
     int n;
     int e;
@@ -85,7 +91,8 @@ keys_info generate_keys_info(void) {
     e = generate_e(phi);
     d = generate_d(e, phi);
 
-    while (d == 1) {
+    while (d == 1) 
+    {
         e = generate_e(phi);
         d = generate_d(e, phi);
     }
@@ -120,10 +127,12 @@ private_key generate_private_key(const keys_info keys_info)
 }
 
 
-static long long power_mod(long long base, long long exponent, long long mod) {
+static long long power_mod(long long base, long long exponent, long long mod) 
+{
     long long result = 1;
     base %= mod;
-    while (exponent > 0) {
+    while (exponent > 0)
+    {
         if (exponent & 1)
             result = (result * base) % mod;
         exponent >>= 1;
@@ -158,12 +167,7 @@ char* decrypt(const private_key private_key, int* cipher)
     message = (char*)malloc((length + 1) * sizeof(char)); //TODO: add safe func
 
     for(i = 0; i < length; i++)
-    {
-        printf("\n%d, base: %d, 1: %d, 2: %d\n", (int)power_mod(cipher[i], private_key.d, private_key.n), cipher[i], private_key.d, private_key.n);
-        long long decrypted_value = power_mod(cipher[i], private_key.d, private_key.n);
-        char decrypted_char = (char)(decrypted_value % 256);
-        message[i] = decrypted_char;
-    }
+        message[i] = (char)power_mod(cipher[i], private_key.d, private_key.n);
         
     message[length] = '\0';
     return message;

@@ -35,3 +35,8 @@ int enter_int_number_in_range(int min, int max)
 
     return num;
 }
+
+int generate_random_num(int min, int max) 
+{
+    return rand() % (max - min + 1) + min;
+}
