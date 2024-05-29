@@ -147,7 +147,7 @@ int* encrypt(const public_key public_key, char* message)
     int i;
 
     int length = strlen(message);
-    cipher = (int*)malloc((length + 1) * sizeof(int)); //TODO: add safe func
+    cipher = (int*)safe_malloc((length + 1) * sizeof(int)); //TODO: add safe func
 
     for(i = 0; message[i]; i++)
         cipher[i] = power_mod(message[i], public_key.e, public_key.n);
@@ -164,7 +164,7 @@ char* decrypt(const private_key private_key, int* cipher)
 
     for(length = 0; cipher[length] != -1; length++);
 
-    message = (char*)malloc((length + 1) * sizeof(char)); //TODO: add safe func
+    message = (char*)safe_malloc((length + 1) * sizeof(char)); //TODO: add safe func
 
     for(i = 0; i < length; i++)
         message[i] = (char)power_mod(cipher[i], private_key.d, private_key.n);

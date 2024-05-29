@@ -136,15 +136,15 @@ char* read_file_path(void)
 
 int write_message_to_file(const char* file_path, char* message)
 {
-    if(is_file_txt(file_path) == 0) 
-        return -1;
-
     FILE* file_ptr = open_file(file_path, "wb");
     if(file_ptr == NULL) 
         return -1;
 
     if(fputs(message, file_ptr) == EOF)
-        return -1;
+    {
+        fclose(file_ptr);
+        exit(EXIT_FAILURE);
+    }
     fclose(file_ptr);
 
     return 0;
@@ -153,9 +153,6 @@ int write_message_to_file(const char* file_path, char* message)
 
 int write_ints_to_file(const char* file_path, int* arr) 
 {
-    if(is_file_txt(file_path) == 0) 
-        return -1;
-
     FILE* file_ptr = fopen(file_path, "wb");
     if(file_ptr == NULL) 
         return -1;
@@ -166,7 +163,7 @@ int write_ints_to_file(const char* file_path, int* arr)
         if(fprintf(file_ptr, "%d ", arr[i]) < 0)
         {
             fclose(file_ptr);
-            return -1;
+            exit(EXIT_FAILURE);
         }
         if(arr[i] == -1)
             break;
@@ -180,8 +177,14 @@ int write_ints_to_file(const char* file_path, int* arr)
 
 int* read_ints_from_file(const char* file_path) 
 {
-    if(is_file_txt(file_path) == 0) 
+    long file_length = get_file_length(file_path);
+    if(file_length == -1) 
         return NULL;
+    if(file_length == 0) 
+    {
+        printf("\nFile is empty! Try using a different file path\n");
+        return NULL;
+    }
 
     FILE* file_ptr = fopen(file_path, "rb");
     if(file_ptr == NULL) 
