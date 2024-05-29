@@ -2,6 +2,7 @@
 #define COMMON_H
 
 void* safe_realloc(void* ptr, int size);
+void* safe_malloc(int size);
 
 int enter_int_number_in_range(int min, int max);
 

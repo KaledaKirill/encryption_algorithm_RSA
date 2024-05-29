@@ -14,10 +14,22 @@ void* safe_realloc(void* ptr, int size)
     else
     {
         free(ptr);
-        printf("\nMemory allocation error!\n");
+        printf("\nMemory reallocation error!\n");
         exit(EXIT_FAILURE);
     }
 }
+
+
+void* safe_malloc(int size)
+{
+    void* ptr = malloc(size);
+    if(ptr == NULL)
+    {
+        printf("\nMemory allocation error!\n");
+        exit(EXIT_FAILURE);
+    }
+    return ptr;
+}   
 
 
 int enter_int_number_in_range(int min, int max)
@@ -35,6 +47,7 @@ int enter_int_number_in_range(int min, int max)
 
     return num;
 }
+
 
 int generate_random_num(int min, int max) 
 {

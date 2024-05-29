@@ -9,16 +9,23 @@
 static char* get_message(void)
 {
     int choice = 0;
-    char* message;
+    char* message = NULL;
 
     printf("\n1. Read message from file(for large text)\n2. Enter message from keyboard(for a short message)\n");
     choice = enter_int_number_in_range(1, 2);
 
     if(choice == 1)
     {
-        printf("\nEnter the path to the file containing the message: "); // TODO: maybe divide on funcs
-        char* message_file_path = read_line();
-        message = read_message_from_file(message_file_path);
+        char* message_file_path = NULL;
+        do
+        {
+            printf("\nEnter the path to the file containing the message: "); // TODO: maybe divide on funcs
+            message_file_path = read_file_path();
+            if(message_file_path == NULL)
+                continue;
+            message = read_message_from_file(message_file_path);
+        }
+        while(message == NULL);
     }
     else if(choice == 2)
         message = read_line();
@@ -57,17 +64,14 @@ int main()
 
         if(mode == 1)
         {
-            int choice = 0;
-            char* message;
             printf("\nEnter the path where you want to save the encrypted message:\n");// TODO: maybe divide on funcs
             char* encrypted_file_path = read_line();
-            message = get_message();
+            char* message = get_message();
             int* encrypted_message = encrypt(public_key, message);
             write_ints_to_file(encrypted_file_path, encrypted_message);
         }
         else if(mode == 2)
         {
-            int choice = 0;
             printf("\nEnter the path to the file containing the encrypted message:\n");// TODO: maybe divide on funcs
             char* encrypted_file_path = read_line();
             int* encrypted_message = read_ints_from_file(encrypted_file_path);
