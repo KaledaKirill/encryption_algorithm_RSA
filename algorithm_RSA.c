@@ -5,8 +5,8 @@
 #include "keys.h"
 #include "common.h"
 
-#define P 101
-#define Q 179
+#define P 3209
+#define Q 3559
 
 static int gcd_extended(int a, int b, int *x, int *y) 
 {
@@ -35,7 +35,7 @@ static int generate_d(int e, int phi)
     gcd = gcd_extended(e, phi, &x, &y);
 
     if (gcd != 1)
-        return -1; // Если НОД(e, phi) не равен 1, то нет мультипликативно обратного элемента
+        return -1; 
     else 
     {
         int d = (x % phi + phi) % phi;
@@ -147,7 +147,7 @@ int* encrypt(const public_key public_key, char* message)
     int i;
 
     int length = strlen(message);
-    cipher = (int*)safe_malloc((length + 1) * sizeof(int)); //TODO: add safe func
+    cipher = (int*)safe_malloc((length + 1) * sizeof(int)); 
 
     for(i = 0; message[i]; i++)
         cipher[i] = power_mod(message[i], public_key.e, public_key.n);
@@ -164,7 +164,7 @@ char* decrypt(const private_key private_key, int* cipher)
 
     for(length = 0; cipher[length] != -1; length++);
 
-    message = (char*)safe_malloc((length + 1) * sizeof(char)); //TODO: add safe func
+    message = (char*)safe_malloc((length + 1) * sizeof(char));
 
     for(i = 0; i < length; i++)
         message[i] = (char)power_mod(cipher[i], private_key.d, private_key.n);

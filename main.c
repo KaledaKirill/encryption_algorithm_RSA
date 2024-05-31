@@ -19,7 +19,7 @@ static char* get_message(void)
         char* message_file_path = NULL;
         do
         {
-            printf("\nEnter the path to the file containing the message: "); // TODO: maybe divide on funcs
+            printf("\nEnter the path to the file containing the message: ");
             message_file_path = read_file_path();
             if(message_file_path == NULL)
                 continue;
@@ -47,7 +47,7 @@ static void save_or_print_message(char* message)
         char* message_file_path = NULL;
         do
         {
-            printf("\nEnter the path to the file where you want to save the decrypted message: ");// TODO: maybe divide on funcs
+            printf("\nEnter the path to the file where you want to save the decrypted message: ");
             message_file_path = read_file_path();
         }
         while(message_file_path == NULL);
@@ -55,6 +55,38 @@ static void save_or_print_message(char* message)
     }
     else if(choice == 2)
         printf("\ndecrypted message:\n%s\n", message);
+}
+
+static void encrypt_message(public_key public_key)
+{
+    char* message = get_message();
+    int* encrypted_message = encrypt(public_key, message);
+    int writing_res = -1;
+    do
+    {
+        printf("\nEnter the path where you want to save the encrypted message: ");
+        char* encrypted_file_path = read_file_path();
+        if(encrypted_file_path == NULL)
+            continue;
+        writing_res = write_ints_to_file(encrypted_file_path, encrypted_message);
+    }
+    while(writing_res == -1);
+}
+
+static void decrypt_message(private_key private_key)
+{
+    int* encrypted_message = NULL;
+    do
+    {
+        printf("\nEnter the path to the file containing the encrypted message: ");
+        char* encrypted_file_path = read_file_path();
+            if(encrypted_file_path == NULL)
+                continue;  
+        encrypted_message = read_ints_from_file(encrypted_file_path);
+    }
+    while(encrypted_message == NULL);
+    char* decrypted_message = decrypt(private_key, encrypted_message);
+    save_or_print_message(decrypted_message);
 }
 
 int main()
@@ -71,35 +103,9 @@ int main()
         if(mode == 3) break;
 
         if(mode == 1)
-        {
-            char* message = get_message();
-            int* encrypted_message = encrypt(public_key, message);
-            int writing_res = -1;
-            do
-            {
-                printf("\nEnter the path where you want to save the encrypted message: ");// TODO: maybe divide on funcs
-                char* encrypted_file_path = read_file_path();
-                if(encrypted_file_path == NULL)
-                    continue;
-                writing_res = write_ints_to_file(encrypted_file_path, encrypted_message);
-            }
-            while(writing_res == -1);
-        }
+           encrypt_message(public_key);
         else if(mode == 2)
-        {
-            int* encrypted_message = NULL;
-            do
-            {
-                printf("\nEnter the path to the file containing the encrypted message: ");// TODO: maybe divide on funcs
-                char* encrypted_file_path = read_file_path();
-                    if(encrypted_file_path == NULL)
-                        continue;  
-                encrypted_message = read_ints_from_file(encrypted_file_path);
-            }
-            while(encrypted_message == NULL);
-            char* decrypted_message = decrypt(private_key, encrypted_message);
-            save_or_print_message(decrypted_message);
-        }
+            decrypt_message(private_key);
     }
    
     return 0;

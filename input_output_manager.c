@@ -5,8 +5,6 @@
 #include "input_output_manager.h"
 #include "common.h"
 
-// all functions must return NULL if error is happend and print error message, but if error is rare we have to end programm
-
 static FILE* open_file(const char* file_path, char* mode)
 {
     FILE* file_ptr = fopen(file_path, mode);
@@ -103,7 +101,7 @@ char* read_line(void)
 {
     char ch;
     int count = 0;
-    int buf_size = 16; // TODO: use define instead of hardcode
+    int buf_size = 16;
     int delta = 16;
     char* string = (char*)safe_malloc(buf_size * sizeof(char));
 
