@@ -144,12 +144,11 @@ static long long power_mod(long long base, long long exponent, long long mod)
 int* encrypt(const public_key public_key, char* message)
 {
     int* cipher = NULL;
-    int i;
 
     int length = strlen(message);
     cipher = (int*)safe_malloc((length + 1) * sizeof(int)); 
 
-    for(i = 0; message[i]; i++)
+    for(int i = 0; message[i]; i++)
         cipher[i] = power_mod(message[i], public_key.e, public_key.n);
 
     cipher[length] = -1;
@@ -159,14 +158,13 @@ int* encrypt(const public_key public_key, char* message)
 char* decrypt(const private_key private_key, int* cipher)
 {
     char* message = NULL;
-    int i;
     int length;
 
     for(length = 0; cipher[length] != -1; length++);
 
     message = (char*)safe_malloc((length + 1) * sizeof(char));
 
-    for(i = 0; i < length; i++)
+    for(int i = 0; i < length; i++)
         message[i] = (char)power_mod(cipher[i], private_key.d, private_key.n);
         
     message[length] = '\0';

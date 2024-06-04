@@ -53,3 +53,11 @@ int generate_random_num(int min, int max)
 {
     return rand() % (max - min + 1) + min;
 }
+
+void free_string_array(char** array, int size) 
+{
+    for(int i = 0; i < size; i++) 
+        free(array[i]);
+
+    free(*array);
+}
