@@ -91,11 +91,8 @@ keys_info generate_keys_info(void)
     e = generate_e(phi);
     d = generate_d(e, phi);
 
-    while (d == 1) 
-    {
-        e = generate_e(phi);
-        d = generate_d(e, phi);
-    }
+    e = generate_e(phi);
+    d = generate_d(e, phi);
 
     keys_info.n = n;
     keys_info.e = e;
